@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Арабский язык | Учим слова</title>
+    
+    <!-- Telegram Web App SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- PDF.js для работы с PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    
+    <style>
+        :root {
+            --bg-color: #667eea;
+            --text-color: #2d3436;
+            --card-bg: #ffffff;
+            --button-bg: #6c5ce7;
+            --button-hover: #5b4fcf;
+            --accent-color: #00b894;
+            --danger-color: #e17055;
+            --warning-color: #fdcb6e;
+        }
+        
+        .theme-dark {
+            --bg-color: #1a1a1a;
+            --text-color: #ffffff;
+            --card-bg: #2d3436;
+            --button-bg: #6c5ce7;
+            --button-hover: #5b4fcf;
+            --accent-color: #00b894;
+            --danger-color: #e17055;
+            --warning-color: #fdcb6e;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: background 0.3s, color 0.3s;
+            overflow-x: hidden;
+        }
+        
+        .app-container {
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .telegram-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background: inherit;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+        }
+        
+        .telegram-back-button {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            display: none;
+        }
+        
+        .content {
+            margin-top: 20px;
+            padding-bottom: 20px;
+        }
+        
+        .card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 30px 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: var(--text-color);
+            margin-bottom: 25px;
+            font-size: 24px;
+        }
+        
+        h2 {
+            color: var(--text-color);
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+        
+        .word-display {
+            margin: 30px 0;
+        }
+        
+        .arabic-word {
+            font-size: 56px;
+            color: var(--text-color);
+            font-weight: bold;
+            font-family: 'Noto Sans Arabic', sans-serif;
+            margin-bottom: 20px;
+            direction: rtl;
+            line-height: 1.3;
+        }
+        
+        .translation {
+            font-size: 24px;
+            color: var(--text-color);
+            background: rgba(0,0,0,0.05);
+            padding: 20px;
+            border-radius: 16px;
+            display: none;
+            margin-top: 20px;
+            border: 2px dashed rgba(0,0,0,0.1);
+            opacity: 0.9;
+        }
+        
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 30px 0 25px;
+        }
+        
+        button {
+            background: var(--button-bg);
+            color: white;
+            border: none;
+            padding: 18px;
+            font-size: 17px;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            width: 100%;
+        }
+        
+        button:hover {
+            background: var(--button-hover);
+            transform: translateY(-2px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .show-btn {
+            background: var(--accent-color);
+        }
+        
+        .counter {
+            color: var(--text-color);
+            font-size: 16px;
+            margin-top: 20px;
+            opacity: 0.8;
+        }
+        
+        .counter span {
+            font-weight: bold;
+            opacity: 1;
+        }
+        
+        .tabs {
+            display: flex;
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 8px;
+            margin-bottom: 20px;
+            position: sticky;
+            top: 60px;
+            z-index: 100;
+            overflow-x: auto;
+        }
+        
+        .tab {
+            flex: 1;
+            min-width: 70px;
+            padding: 12px;
+            text-align: center;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 14px;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        
+        .tab.active {
+            background: var(--button-bg);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Аудио контролы */
+        .audio-controls {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            justify-content: center;
+        }
+        
+        .audio-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            background: var(--accent-color);
+        }
+        
+        /* Списки слов */
+        .word-list {
+            max-height: 400px;
+            overflow-y: auto;
+            margin: 20px 0;
+        }
+        
+        .word-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin: 10px 0;
+            background: rgba(0,0,0,0.05);
+            border-radius: 12px;
+            border-left: 4px solid var(--accent-color);
+        }
+        
+        .word-item.learned {
+            border-left-color: #00b894;
+            opacity: 0.7;
+        }
+        
+        .word-item.problem {
+            border-left-color: var(--danger-color);
+        }
+        
+        .word-text {
+            text-align: right;
+            flex: 1;
+        }
+        
+        .word-arabic {
+            font-family: 'Noto Sans Arabic', sans-serif;
+            font-size: 24px;
+            direction: rtl;
+        }
+        
+        .word-translation {
+            color: var(--text-color);
+            opacity: 0.8;
+            font-size: 14px;
+        }
+        
+        .word-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        
+        .learn-btn {
+            background: var(--accent-color);
+        }
+        
+        .problem-btn {
+            background: var(--danger-color);
+        }
+        
+        .audio-btn-small {
+            background: #74b9ff;
+        }
+        
+        /* Загрузка PDF */
+        .file-upload {
+            margin: 20px 0;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .file-label {
+            display: block;
+            padding: 20px;
+            border: 2px dashed rgba(0,0,0,0.3);
+            border-radius: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .file-label:hover {
+            border-color: var(--accent-color);
+            background: rgba(0,0,0,0.05);
+        }
+        
+        .pdf-preview {
+            max-height: 300px;
+            overflow-y: auto;
+            background: rgba(0,0,0,0.05);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: left;
+        }
+        
+        .pdf-page {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+        
+        .pdf-page:last-child {
+            border-bottom: none;
+        }
+        
+        /* Фильтры */
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 8px 16px;
+            font-size: 14px;
+            background: rgba(0,0,0,0.1);
+            color: var(--text-color);
+        }
+        
+        .filter-btn.active {
+            background: var(--button-bg);
+            color: white;
+        }
+        
+        /* Модальное окно */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 10000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 25px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        /* Прогресс */
+        .progress-bar {
+            height: 10px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 5px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--accent-color);
+            transition: width 0.5s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @media (max-width: 500px) {
+            .arabic-word {
+                font-size: 48px;
+            }
+            
+            .card {
+                padding: 25px 20px;
+            }
+            
+            h1 {
+                font-size: 22px;
+            }
+            
+            .tabs {
+                overflow-x: auto;
+                padding: 6px;
+            }
+            
+            .tab {
+                font-size: 12px;
+                padding: 10px 6px;
+                min-width: 60px;
+            }
+        }
+        
+        @media (hover: none) {
+            button:hover {
+                transform: none;
+            }
+            
+            button:active {
+                opacity: 0.8;
+            }
+        }
+    </style>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="telegram-header">
+        <button class="telegram-back-button" id="back-button">←</button>
+    </div>
+    
+    <div class="app-container">
+        <div class="tabs">
+            <button class="tab active" data-tab="cards">🎴 Карточки</button>
+            <button class="tab" data-tab="lists">📚 Списки</button>
+            <button class="tab" data-tab="pdf">📄 PDF</button>
+            <button class="tab" data-tab="add">➕ Добавить</button>
+            <button class="tab" data-tab="exercises">🧪 Упражнения</button>
+        </div>
+        
+        <div class="content">
+            <!-- Вкладка Карточки -->
+            <div id="cards-tab" class="tab-content active">
+                <div class="card">
+                    <h1>📚 Учим арабский язык</h1>
+                    
+                    <!-- Фильтры -->
+                    <div class="filters">
+                        <button class="filter-btn active" data-filter="all">Все</button>
+                        <button class="filter-btn" data-filter="learned">Выученные</button>
+                        <button class="filter-btn" data-filter="unlearned">Не выученные</button>
+                        <button class="filter-btn" data-filter="problem">Сложные</button>
+                    </div>
+                    
+                    <!-- Выбор файла -->
+                    <div style="margin: 15px 0;">
+                        <select id="file-select" style="width: 100%; padding: 12px; border-radius: 12px; background: var(--card-bg); color: var(--text-color); border: 2px solid rgba(0,0,0,0.1);">
+                            <option value="all">Все слова</option>
+                        </select>
+                    </div>
+                    
+                    <div class="word-display">
+                        <div class="arabic-word" id="word">مرحبا</div>
+                        <div class="translation" id="translation">Привет</div>
+                    </div>
+                    
+                    <!-- Аудио контролы -->
+                    <div class="audio-controls">
+                        <button class="audio-btn" id="play-arabic">🎵</button>
+                        <button class="audio-btn" id="play-translation">🔊</button>
+                    </div>
+                    
+                    <div class="buttons">
+                        <button class="show-btn" id="show-translation-btn">👁️ Показать перевод</button>
+                        <button id="mark-learned-btn">✅ Выучено</button>
+                        <button id="mark-problem-btn">⚠️ Сложное</button>
+                        <button id="next-word-btn">➡️ Следующее слово</button>
+                    </div>
+                    
+                    <div class="counter">
+                        Слово <span id="current">1</span> из <span id="total">5</span> |
+                        Прогресс: <span id="progress">0%</span>
+                    </div>
+                    
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Вкладка Списки слов -->
+            <div id="lists-tab" class="tab-content">
+                <div class="card">
+                    <h1>📚 Мои списки слов</h1>
+                    
+                    <div class="buttons">
+                        <button id="create-list-btn">📝 Создать новый список</button>
+                        <button id="view-all-words-btn">👁️ Просмотреть все слова</button>
+                        <button id="export-words-btn">📤 Экспорт слов</button>
+                    </div>
+                    
+                    <div class="word-list" id="words-list">
+                        <!-- Слова будут здесь -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Вкладка PDF -->
+            <div id="pdf-tab" class="tab-content">
+                <div class="card">
+                    <h1>📄 Загрузка PDF</h1>
+                    
+                    <div class="file-upload">
+                        <label class="file-label" for="pdf-input">
+                            📁 Нажмите для загрузки PDF
+                            <input type="file" id="pdf-input" class="file-input" accept=".pdf">
+                        </label>
+                        <p style="margin-top: 10px; opacity: 0.7; font-size: 14px;">
+                            Поддерживаются PDF с текстом (не сканы)
+                        </p>
+                    </div>
+                    
+                    <div id="pdf-processing" style="display: none;">
+                        <h2>Обработка PDF...</h2>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="pdf-progress" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    
+                    <div id="pdf-results" style="display: none;">
+                        <h2>Найденные слова</h2>
+                        <div class="pdf-preview" id="pdf-preview">
+                            <!-- Превью PDF -->
+                        </div>
+                        
+                        <div class="buttons">
+                            <button id="add-from-pdf-btn">✅ Добавить выбранные слова</button>
+                            <button id="clear-pdf-btn">🗑️ Очистить</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Вкладка Добавить слова -->
+            <div id="add-tab" class="tab-content">
+                <div class="card">
+                    <h1>➕ Добавить слова</h1>
+                    
+                    <div style="text-align: left; margin-bottom: 25px;">
+                        <p style="margin-bottom: 15px; opacity: 0.8;">Формат: арабское слово - перевод</p>
+                        
+                        <select id="add-to-list" style="width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 12px; background: var(--card-bg); color: var(--text-color); border: 2px solid rgba(0,0,0,0.1);">
+                            <option value="main">Основной список</option>
+                        </select>
+                        
+                        <textarea id="new-words" 
+                                  placeholder="مرحبا - Привет
+شكرا - Спасибо
+كتاب - Книга"
+                                  style="width: 100%; height: 150px; padding: 15px; 
+                                         border: 2px solid rgba(0,0,0,0.1); 
+                                         border-radius: 12px; 
+                                         font-size: 16px;
+                                         background: var(--card-bg);
+                                         color: var(--text-color);
+                                         resize: vertical;"></textarea>
+                        
+                        <button id="add-words-btn" style="margin-top: 20px; background: var(--accent-color);">
+                            ✅ Добавить слова
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Вкладка Упражнения -->
+            <div id="exercises-tab" class="tab-content">
+                <div class="card">
+                    <h1>🧪 Упражнения</h1>
+                    
+                    <div style="margin: 25px 0;">
+                        <p style="opacity: 0.8; margin-bottom: 20px;">Выберите тип упражнения:</p>
+                        
+                        <div class="buttons">
+                            <button id="multiple-choice-btn" style="background: #fd79a8;">
+                                ❓ Выбор ответа
+                            </button>
+                            
+                            <button id="typing-btn" style="background: #74b9ff;">
+                                ⌨️ Написание
+                            </button>
+                            
+                            <button id="listening-btn" style="background: #00cec9;">
+                                👂 Аудирование
+                            </button>
+                            
+                            <button id="stats-btn" style="background: #a29bfe;">
+                                📊 Статистика
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Модальное окно создания списка -->
+    <div class="modal" id="create-list-modal">
+        <div class="modal-content">
+            <h2>📝 Создать новый список</h2>
+            
+            <div style="margin: 20px 0;">
+                <input type="text" id="list-name" placeholder="Название списка" style="width: 100%; padding: 15px; border-radius: 12px; border: 2px solid rgba(0,0,0,0.1); margin-bottom: 15px;">
+                
+                <textarea id="list-description" placeholder="Описание (необязательно)" style="width: 100%; height: 100px; padding: 15px; border-radius: 12px; border: 2px solid rgba(0,0,0,0.1);"></textarea>
+                
+                <div class="buttons" style="margin-top: 20px;">
+                    <button id="save-list-btn" style="background: var(--accent-color);">💾 Сохранить</button>
+                    <button id="cancel-list-btn" style="background: var(--danger-color);">❌ Отмена</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>
