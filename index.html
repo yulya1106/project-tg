@@ -1,645 +1,682 @@
-<!DOCTYPE html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Арабский язык | Учим слова</title>
-    
-    <!-- Telegram Web App SDK -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    
-    <style>
-        :root {
-            --bg-color: #667eea;
-            --text-color: #2d3436;
-            --card-bg: #ffffff;
-            --button-bg: #6c5ce7;
-            --button-hover: #5b4fcf;
-            --accent-color: #00b894;
-            --danger-color: #e17055;
-            --warning-color: #fdcb6e;
-        }
-        
-        .theme-dark {
-            --bg-color: #1a1a1a;
-            --text-color: #ffffff;
-            --card-bg: #2d3436;
-            --button-bg: #6c5ce7;
-            --button-hover: #5b4fcf;
-            --accent-color: #00b894;
-            --danger-color: #e17055;
-            --warning-color: #fdcb6e;
-        }
-        
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
-            background: var(--bg-color);
-            color: var(--text-color);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            transition: background 0.3s, color 0.3s;
-            overflow-x: hidden;
-        }
-        
-        .app-container {
-            width: 100%;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-        
-        .telegram-header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 56px;
-            background: inherit;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            padding: 0 16px;
-        }
-        
-        .telegram-back-button {
-            background: none;
-            border: none;
-            color: var(--text-color);
-            font-size: 24px;
-            cursor: pointer;
-            padding: 8px;
-            display: none;
-        }
-        
-        .content {
-            margin-top: 20px;
-            padding-bottom: 20px;
-        }
-        
-        .card {
-            background: var(--card-bg);
-            border-radius: 24px;
-            padding: 30px 25px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        
-        h1 {
-            color: var(--text-color);
-            margin-bottom: 25px;
-            font-size: 24px;
-        }
-        
-        h2 {
-            color: var(--text-color);
-            margin-bottom: 20px;
-            font-size: 20px;
-        }
-        
-        .word-display {
-            margin: 30px 0;
-        }
-        
-        .arabic-word {
-            font-size: 56px;
-            color: var(--text-color);
-            font-weight: bold;
-            font-family: 'Noto Sans Arabic', sans-serif;
-            margin-bottom: 20px;
-            direction: rtl;
-            line-height: 1.3;
-        }
-        
-        .translation {
-            font-size: 24px;
-            color: var(--text-color);
-            background: rgba(0,0,0,0.05);
-            padding: 20px;
-            border-radius: 16px;
-            display: none;
-            margin-top: 20px;
-            border: 2px dashed rgba(0,0,0,0.1);
-            opacity: 0.9;
-        }
-        
-        .buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin: 30px 0 25px;
-        }
-        
-        button {
-            background: var(--button-bg);
-            color: white;
-            border: none;
-            padding: 18px;
-            font-size: 17px;
-            border-radius: 14px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: 600;
-            width: 100%;
-        }
-        
-        button:hover {
-            background: var(--button-hover);
-            transform: translateY(-2px);
-        }
-        
-        button:active {
-            transform: translateY(0);
-        }
-        
-        .show-btn {
-            background: var(--accent-color);
-        }
-        
-        .counter {
-            color: var(--text-color);
-            font-size: 16px;
-            margin-top: 20px;
-            opacity: 0.8;
-        }
-        
-        .counter span {
-            font-weight: bold;
-            opacity: 1;
-        }
-        
-        .tabs {
-            display: flex;
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 8px;
-            margin-bottom: 20px;
-            position: sticky;
-            top: 60px;
-            z-index: 100;
-            overflow-x: auto;
-        }
-        
-        .tab {
-            flex: 1;
-            min-width: 70px;
-            padding: 12px;
-            text-align: center;
-            background: none;
-            border: none;
-            color: var(--text-color);
-            font-size: 14px;
-            cursor: pointer;
-            border-radius: 12px;
-            transition: all 0.3s;
-            white-space: nowrap;
-        }
-        
-        .tab.active {
-            background: var(--button-bg);
-            color: white;
-        }
-        
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.3s;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        /* Аудио контролы */
-        .audio-controls {
-            display: flex;
-            gap: 10px;
-            margin: 20px 0;
-            justify-content: center;
-        }
-        
-        .audio-btn {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            background: var(--accent-color);
-        }
-        
-        /* Списки слов */
-        .word-list {
-            max-height: 400px;
-            overflow-y: auto;
-            margin: 20px 0;
-        }
-        
-        .word-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            margin: 10px 0;
-            background: rgba(0,0,0,0.05);
-            border-radius: 12px;
-            border-left: 4px solid var(--accent-color);
-        }
-        
-        .word-item.learned {
-            border-left-color: #00b894;
-            opacity: 0.7;
-        }
-        
-        .word-item.problem {
-            border-left-color: var(--danger-color);
-        }
-        
-        .word-text {
-            text-align: right;
-            flex: 1;
-        }
-        
-        .word-arabic {
-            font-family: 'Noto Sans Arabic', sans-serif;
-            font-size: 24px;
-            direction: rtl;
-        }
-        
-        .word-translation {
-            color: var(--text-color);
-            opacity: 0.8;
-            font-size: 14px;
-        }
-        
-        .word-actions {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .action-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-        }
-        
-        .learn-btn {
-            background: var(--accent-color);
-        }
-        
-        .problem-btn {
-            background: var(--danger-color);
-        }
-        
-        .audio-btn-small {
-            background: #74b9ff;
-        }
-        
-        /* Фильтры */
-        .filters {
-            display: flex;
-            gap: 10px;
-            margin: 15px 0;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        
-        .filter-btn {
-            padding: 8px 16px;
-            font-size: 14px;
-            background: rgba(0,0,0,0.1);
-            color: var(--text-color);
-            width: auto;
-        }
-        
-        .filter-btn.active {
-            background: var(--button-bg);
-            color: white;
-        }
-        
-        /* Модальное окно */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.7);
-            z-index: 10000;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        
-        .modal.active {
-            display: flex;
-        }
-        
-        .modal-content {
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 25px;
-            max-width: 500px;
-            width: 100%;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-        
-        /* Прогресс */
-        .progress-bar {
-            height: 10px;
-            background: rgba(0,0,0,0.1);
-            border-radius: 5px;
-            margin: 20px 0;
-            overflow: hidden;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background: var(--accent-color);
-            transition: width 0.5s;
-        }
-        
-        /* Упражнения */
-        .exercise-container {
-            display: none;
-        }
-        
-        .exercise-container.active {
-            display: block;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        @media (max-width: 500px) {
-            .arabic-word {
-                font-size: 48px;
-            }
-            
-            .card {
-                padding: 25px 20px;
-            }
-            
-            h1 {
-                font-size: 22px;
-            }
-            
-            .tabs {
-                overflow-x: auto;
-                padding: 6px;
-            }
-            
-            .tab {
-                font-size: 12px;
-                padding: 10px 6px;
-                min-width: 60px;
-            }
-        }
-        
-        @media (hover: none) {
-            button:hover {
-                transform: none;
-            }
-            
-            button:active {
-                opacity: 0.8;
-            }
-        }
-    </style>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2685.6">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
 </head>
 <body>
-    <div class="telegram-header">
-        <button class="telegram-back-button" id="back-button">←</button>
-    </div>
-    
-    <div class="app-container">
-        <div class="tabs">
-            <button class="tab active" data-tab="cards">🎴 Карточки</button>
-            <button class="tab" data-tab="lists">📚 Списки</button>
-            <button class="tab" data-tab="add">➕ Добавить</button>
-            <button class="tab" data-tab="exercises">🧪 Упражнения</button>
-        </div>
-        
-        <div class="content">
-            <!-- Вкладка Карточки -->
-            <div id="cards-tab" class="tab-content active">
-                <div class="card">
-                    <h1>📚 Учим арабский язык</h1>
-                    
-                    <!-- Фильтры -->
-                    <div class="filters">
-                        <button class="filter-btn active" data-filter="all">Все</button>
-                        <button class="filter-btn" data-filter="learned">Выученные</button>
-                        <button class="filter-btn" data-filter="unlearned">Не выученные</button>
-                        <button class="filter-btn" data-filter="problem">Сложные</button>
-                    </div>
-                    
-                    <div class="word-display">
-                        <div class="arabic-word" id="word">مرحبا</div>
-                        <div class="translation" id="translation">Привет</div>
-                    </div>
-                    
-                    <!-- Аудио контролы -->
-                    <div class="audio-controls">
-                        <button class="audio-btn" id="play-arabic">🎵</button>
-                        <button class="audio-btn" id="play-translation">🔊</button>
-                    </div>
-                    
-                    <div class="buttons">
-                        <button class="show-btn" id="show-translation-btn">👁️ Показать перевод</button>
-                        <button id="mark-learned-btn">✅ Выучено</button>
-                        <button id="mark-problem-btn">⚠️ Сложное</button>
-                        <button id="next-word-btn">➡️ Следующее слово</button>
-                    </div>
-                    
-                    <div class="counter">
-                        Слово <span id="current">1</span> из <span id="total">5</span> |
-                        Прогресс: <span id="progress">0%</span>
-                    </div>
-                    
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Вкладка Списки слов -->
-            <div id="lists-tab" class="tab-content">
-                <div class="card">
-                    <h1>📚 Мои списки слов</h1>
-                    
-                    <div class="buttons">
-                        <button id="create-list-btn">📝 Создать новый список</button>
-                        <button id="view-all-words-btn">👁️ Просмотреть все слова</button>
-                        <button id="export-words-btn">📤 Экспорт слов</button>
-                        <button id="import-words-btn">📥 Импорт слов</button>
-                    </div>
-                    
-                    <div class="word-list" id="words-list">
-                        <!-- Слова будут здесь -->
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Вкладка Добавить слова -->
-            <div id="add-tab" class="tab-content">
-                <div class="card">
-                    <h1>➕ Добавить слова</h1>
-                    
-                    <div style="text-align: left; margin-bottom: 25px;">
-                        <p style="margin-bottom: 15px; opacity: 0.8;">Формат: арабское слово - перевод (каждое слово с новой строки)</p>
-                        
-                        <div style="margin-bottom: 15px;">
-                            <label style="display: block; margin-bottom: 5px; opacity: 0.8;">Добавить в список:</label>
-                            <select id="add-to-list" style="width: 100%; padding: 12px; border-radius: 12px; background: var(--card-bg); color: var(--text-color); border: 2px solid rgba(0,0,0,0.1);">
-                                <option value="main">Основной список</option>
-                            </select>
-                        </div>
-                        
-                        <textarea id="new-words" 
-                                  placeholder="مرحبا - Привет
-شكرا - Спасибо
-كتاب - Книга
-مدرسة - Школа
-بيت - Дом"
-                                  style="width: 100%; height: 200px; padding: 15px; 
-                                         border: 2px solid rgba(0,0,0,0.1); 
-                                         border-radius: 12px; 
-                                         font-size: 16px;
-                                         background: var(--card-bg);
-                                         color: var(--text-color);
-                                         resize: vertical;"></textarea>
-                        
-                        <div class="buttons" style="margin-top: 20px;">
-                            <button id="add-words-btn" style="background: var(--accent-color);">
-                                ✅ Добавить слова
-                            </button>
-                            <button id="clear-words-btn" style="background: var(--danger-color);">
-                                🗑️ Очистить поле
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Вкладка Упражнения -->
-            <div id="exercises-tab" class="tab-content">
-                <!-- Меню выбора упражнений -->
-                <div id="exercises-menu" class="exercise-container active">
-                    <div class="card">
-                        <h1>🧪 Упражнения</h1>
-                        
-                        <div style="margin: 25px 0;">
-                            <p style="opacity: 0.8; margin-bottom: 20px;">Выберите тип упражнения:</p>
-                            
-                            <div class="buttons">
-                                <button id="multiple-choice-btn" style="background: #fd79a8;">
-                                    ❓ Выбор ответа
-                                </button>
-                                
-                                <button id="typing-btn" style="background: #74b9ff;">
-                                    ⌨️ Написание
-                                </button>
-                                
-                                <button id="listening-btn" style="background: #00cec9;">
-                                    👂 Аудирование
-                                </button>
-                                
-                                <button id="stats-btn" style="background: #a29bfe;">
-                                    📊 Статистика
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Упражнение: Выбор ответа -->
-                <div id="exercise-multiple-choice" class="exercise-container">
-                    <!-- Контент будет динамически добавляться -->
-                </div>
-                
-                <!-- Упражнение: Написание -->
-                <div id="exercise-typing" class="exercise-container">
-                    <!-- Контент будет динамически добавляться -->
-                </div>
-                
-                <!-- Упражнение: Аудирование -->
-                <div id="exercise-listening" class="exercise-container">
-                    <!-- Контент будет динамически добавляться -->
-                </div>
-                
-                <!-- Статистика -->
-                <div id="exercise-stats" class="exercise-container">
-                    <!-- Контент будет динамически добавляться -->
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Модальное окно создания списка -->
-    <div class="modal" id="create-list-modal">
-        <div class="modal-content">
-            <h2>📝 Создать новый список</h2>
-            
-            <div style="margin: 20px 0;">
-                <input type="text" id="list-name" placeholder="Название списка" style="width: 100%; padding: 15px; border-radius: 12px; border: 2px solid rgba(0,0,0,0.1); margin-bottom: 15px;">
-                
-                <textarea id="list-description" placeholder="Описание (необязательно)" style="width: 100%; height: 100px; padding: 15px; border-radius: 12px; border: 2px solid rgba(0,0,0,0.1);"></textarea>
-                
-                <div class="buttons" style="margin-top: 20px;">
-                    <button id="save-list-btn" style="background: var(--accent-color);">💾 Сохранить</button>
-                    <button id="cancel-list-btn" style="background: var(--danger-color);">❌ Отмена</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Модальное окно импорта -->
-    <div class="modal" id="import-modal">
-        <div class="modal-content">
-            <h2>📥 Импорт слов</h2>
-            
-            <div style="margin: 20px 0;">
-                <p style="margin-bottom: 15px; opacity: 0.8;">Вставьте JSON данные для импорта:</p>
-                
-                <textarea id="import-data" placeholder='{"words": [{"arabic": "مرحبا", "translation": "Привет", "learned": false}]}'
-                          style="width: 100%; height: 200px; padding: 15px; border-radius: 12px; border: 2px solid rgba(0,0,0,0.1); 
-                                 background: var(--card-bg); color: var(--text-color); font-family: monospace;"></textarea>
-                
-                <div style="margin: 15px 0; padding: 10px; background: rgba(0,0,0,0.05); border-radius: 8px;">
-                    <p style="font-size: 12px; opacity: 0.7; margin: 0;">
-                        Формат: JSON с полями "words" (массив слов) и "lists" (массив списков, опционально)
-                    </p>
-                </div>
-                
-                <div class="buttons" style="margin-top: 20px;">
-                    <button id="import-confirm-btn" style="background: var(--accent-color);">📥 Импортировать</button>
-                    <button id="import-cancel-btn" style="background: var(--danger-color);">❌ Отмена</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <script src="app.js"></script>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;title&gt;Learn Arabic | Arabic Words&lt;/title&gt;</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Telegram Web App SDK --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://telegram.org/js/telegram-web-app.js"&gt;&lt;/script&gt;</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>:root {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>--bg-color: #667eea;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>--text-color: #2d3436;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>--card-bg: #ffffff;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>--button-bg: #6c5ce7;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>--button-hover: #5b4fcf;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>--accent-color: #00b894;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>--danger-color: #e17055;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>--warning-color: #fdcb6e;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.theme-dark {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>--bg-color: #1a1a1a;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>--text-color: #ffffff;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>--card-bg: #2d3436;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>--button-bg: #6c5ce7;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>--button-hover: #5b4fcf;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>--accent-color: #00b894;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>--danger-color: #e17055;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>--warning-color: #fdcb6e;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>* {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>box-sizing: border-box;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin: 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>-webkit-tap-highlight-color: transparent;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>body {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: var(--bg-color);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: var(--text-color);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>min-height: 100vh;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>justify-content: center;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>align-items: center;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>transition: background 0.3s, color 0.3s;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>overflow-x: hidden;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.app-container {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>width: 100%;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>max-width: 500px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin: 0 auto;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.telegram-header {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>position: fixed;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>top: 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>left: 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>right: 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>height: 56px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: inherit;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>z-index: 1000;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>align-items: center;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 0 16px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.telegram-back-button {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: none;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border: none;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: var(--text-color);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 24px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>cursor: pointer;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: none;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.content {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-top: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding-bottom: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.card {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: var(--card-bg);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 24px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 30px 25px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>box-shadow: 0 10px 40px rgba(0,0,0,0.1);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>h1 {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: var(--text-color);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 25px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 24px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>h2 {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: var(--text-color);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.word-display {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin: 30px 0;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.arabic-word {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 56px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: var(--text-color);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-weight: bold;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-family: 'Noto Sans Arabic', sans-serif;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>direction: rtl;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>line-height: 1.3;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.translation {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 24px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: var(--text-color);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: rgba(0,0,0,0.05);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 16px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: none;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-top: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border: 2px dashed rgba(0,0,0,0.1);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>opacity: 0.9;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.buttons {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>flex-direction: column;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>gap: 15px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin: 30px 0 25px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>button {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: var(--button-bg);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border: none;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 18px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 17px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 14px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>cursor: pointer;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>transition: all 0.3s;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-weight: 600;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>width: 100%;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>button:hover {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: var(--button-hover);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>transform: translateY(-2px);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>button:active {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>transform: translateY(0);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.show-btn {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: var(--accent-color);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.counter {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: var(--text-color);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 16px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-top: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>opacity: 0.8;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.counter span {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-weight: bold;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>opacity: 1;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.tabs {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: var(--card-bg);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 16px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>position: sticky;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>top: 60px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>z-index: 100;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>overflow-x: auto;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.tab {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>flex: 1;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>min-width: 70px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>text-align: center;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: none;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border: none;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: var(--text-color);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 14px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>cursor: pointer;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>transition: all 0.3s;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>white-space: nowrap;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.tab.active {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: var(--button-bg);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.tab-content {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: none;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>animation: fadeIn 0.3s;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.tab-content.active {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: block;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.audio-controls {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>gap: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin: 20px 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>justify-content: center;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.audio-btn {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>width: 50px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>height: 50px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 50%;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>align-items: center;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>justify-content: center;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: var(--accent-color);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.word-list {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>max-height: 400px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>overflow-y: auto;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin: 20px 0;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.word-item {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>justify-content: space-between;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>align-items: center;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 15px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin: 10px 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: rgba(0,0,0,0.05);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-left: 4px solid var(--accent-color);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.word-item.learned {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-left-color: #00b894;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>opacity: 0.7;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.word-item.problem {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-left-color: var(--danger-color);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.word-text {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>text-align: right;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>flex: 1;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.word-arabic {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-family: 'Noto Sans Arabic', sans-serif;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 24px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>direction: rtl;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.word-translation {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: var(--text-color);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>opacity: 0.8;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 14px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.word-actions {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>gap: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.action-btn {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>width: 36px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>height: 36px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 50%;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>align-items: center;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>justify-content: center;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 14px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.learn-btn {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: var(--accent-color);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.problem-btn {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: var(--danger-color);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.audio-btn-small {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: #74b9ff;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.filters {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>gap: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin: 15px 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>flex-wrap: wrap;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>justify-content: center;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.filter-btn {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 8px 16px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 14px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: rgba(0,0,0,0.1);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: var(--text-color);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>width: auto;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.filter-btn.active {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: var(--button-bg);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: white;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.modal {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>position: fixed;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>top: 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>left: 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>right: 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>bottom: 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: rgba(0,0,0,0.7);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>z-index: 10000;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: none;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>justify-content: center;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>align-items: center;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 20px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.modal.active {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.modal-content {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: var(--card-bg);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 16px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 25px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>max-width: 500px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>width: 100%;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>max-height: 80vh;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>overflow-y: auto;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.progress-bar {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>height: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: rgba(0,0,0,0.1);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 5px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin: 20px 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>overflow: hidden;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.progress-fill {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>height: 100%;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: var(--accent-color);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>transition: width 0.5s;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.exercise-container {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: none;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.exercise-container.active {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: block;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.preview-table {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>width: 100%;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-collapse: collapse;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-top: 15px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.preview-table th, .preview-table td {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>text-align: left;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-bottom: 1px solid #ddd;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.preview-table input {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>width: 100%;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 6px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border: 1px solid #ccc;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: var(--card-bg);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>color: var(--text-color);</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.podcast-history-item {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background: rgba(0,0,0,0.05);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-radius: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin: 10px 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>text-align: left;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.podcast-history-date {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>opacity: 0.7;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.podcast-history-preview {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-family: 'Noto Sans Arabic', sans-serif;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>direction: rtl;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 14px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin-bottom: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>white-space: nowrap;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>overflow: hidden;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>text-overflow: ellipsis;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.podcast-history-actions {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>display: flex;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>gap: 10px;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.podcast-history-actions button {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>padding: 8px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>font-size: 14px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>margin: 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>width: auto;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>@keyframes fadeIn {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>from { opacity: 0; transform: translateY(10px); }</p>
+<p class="p1"><span class="Apple-converted-space">            </span>to { opacity: 1; transform: translateY(0); }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>@media (max-width: 500px) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.arabic-word {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>font-size: 48px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.card {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>padding: 25px 20px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>h1 {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>font-size: 22px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.tabs {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>overflow-x: auto;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>padding: 6px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>.tab {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>font-size: 12px;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>padding: 10px 6px;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>min-width: 60px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&amp;display=swap" rel="stylesheet"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Libraries for file parsing --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"&gt;&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"&gt;&lt;/script&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="telegram-header"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;button class="telegram-back-button" id="back-button"&gt;←&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="app-container"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="tabs"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="tab active" data-tab="cards"&gt;🎴 Cards&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="tab" data-tab="lists"&gt;📚 Lists&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="tab" data-tab="podcasts"&gt;🎙️ Podcasts&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="tab" data-tab="add"&gt;➕ Add&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;button class="tab" data-tab="exercises"&gt;🧪 Exercises&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="content"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Cards tab --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="cards-tab" class="tab-content active"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="card"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;h1 id="app-title"&gt;📚 Learn Arabic&lt;/h1&gt;</p>
+<p class="p2"><span class="Apple-converted-space">                    </span></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="filters"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;button class="filter-btn active" data-filter="all"&gt;All&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;button class="filter-btn" data-filter="learned"&gt;Learned&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;button class="filter-btn" data-filter="unlearned"&gt;Not learned&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;button class="filter-btn" data-filter="problem"&gt;Difficult&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">                    </span></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="filters" id="list-filters"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;button class="filter-list-btn active" data-list="all"&gt;All lists&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">                    </span></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="word-display"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="arabic-word" id="word"&gt;مرحبا&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="translation" id="translation"&gt;Hello&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">                    </span></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="audio-controls"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;button class="audio-btn" id="play-arabic"&gt;🎵&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;button class="audio-btn" id="play-translation"&gt;🔊&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">                    </span></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="buttons"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;button class="show-btn" id="show-translation-btn"&gt;👁️ Show translation&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;button id="mark-learned-btn"&gt;✅ Learned&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;button id="mark-problem-btn"&gt;⚠️ Difficult&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;button id="next-word-btn"&gt;➡️ Next word&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">                    </span></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="counter"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>Word &lt;span id="current"&gt;1&lt;/span&gt; of &lt;span id="total"&gt;5&lt;/span&gt; |</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>Progress: &lt;span id="progress"&gt;0%&lt;/span&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">                    </span></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="progress-bar"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="progress-fill" id="progress-fill" style="width: 0%"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Lists tab --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="lists-tab" class="tab-content"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="card"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;h1&gt;📚 My word lists&lt;/h1&gt;</p>
+<p class="p2"><span class="Apple-converted-space">                    </span></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="buttons"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;button id="create-list-btn"&gt;📝 Create new list&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;button id="view-all-words-btn"&gt;👁️ View all words&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;button id="export-words-btn"&gt;📤 Export words&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;button id="import-words-btn"&gt;📥 Import words&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">                    </span></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="word-list" id="words-list"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Podcasts tab --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="podcasts-tab" class="tab-content"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="card"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;h1&gt;🎙️ Arabic Podcasts&lt;/h1&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;button id="generate-podcast-btn" style="background: var(--accent-color);"&gt;✨ Generate new podcast (25-35 random words)&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div id="podcast-history" style="margin-top: 20px;"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;h3&gt;📀 Recent podcasts (last 5)&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div id="podcast-list"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Add words tab --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="add-tab" class="tab-content"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="card"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;h1&gt;➕ Add words&lt;/h1&gt;</p>
+<p class="p2"><span class="Apple-converted-space">                    </span></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div style="text-align: left; margin-bottom: 25px;"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;p style="margin-bottom: 15px; opacity: 0.8;"&gt;Format: arabic word - translation (each word on new line)&lt;/p&gt;</p>
+<p class="p2"><span class="Apple-converted-space">                        </span></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div style="margin-bottom: 15px;"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;label style="display: block; margin-bottom: 5px; opacity: 0.8;"&gt;Add to list:&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;select id="add-to-list" style="width: 100%; padding: 12px; border-radius: 12px; background: var(--card-bg); color: var(--text-color); border: 2px solid rgba(0,0,0,0.1);"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;option value="main"&gt;Main list&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">                        </span></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;textarea id="new-words"<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                                  </span>placeholder="مرحبا - Hello</p>
+<p dir="rtl" class="p1">شكرا - Thanks</p>
+<p dir="rtl" class="p1">كتاب - Book</p>
+<p dir="rtl" class="p1">مدرسة - School</p>
+<p dir="rtl" class="p1">بيت - House"</p>
+<p class="p1"><span class="Apple-converted-space">                                  </span>style="width: 100%; height: 150px; padding: 15px;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                                         </span>border: 2px solid rgba(0,0,0,0.1);<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                                         </span>border-radius: 12px;<span class="Apple-converted-space"> </span></p>
+<p class="p1"><span class="Apple-converted-space">                                         </span>font-size: 16px;</p>
+<p class="p1"><span class="Apple-converted-space">                                         </span>background: var(--card-bg);</p>
+<p class="p1"><span class="Apple-converted-space">                                         </span>color: var(--text-color);</p>
+<p class="p1"><span class="Apple-converted-space">                                         </span>resize: vertical;"&gt;&lt;/textarea&gt;</p>
+<p class="p2"><span class="Apple-converted-space">                        </span></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="buttons" style="margin-top: 20px;"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;button id="add-words-btn" style="background: var(--accent-color);"&gt;✅ Add words&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;button id="clear-words-btn" style="background: var(--danger-color);"&gt;🗑️ Clear&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">                    </span></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;hr style="margin: 20px 0;"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;h3&gt;📄 Import from file (PDF, DOCX, TXT)&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;p style="font-size: 14px; opacity: 0.7; margin-bottom: 10px;"&gt;The app will extract Arabic words and get translations (free, no AI).&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;input type="file" id="import-file-input" accept=".pdf,.docx,.txt" style="margin: 10px 0;"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;button id="parse-file-btn" style="background: #9b59b6;"&gt;🔍 Extract words from file&lt;/button&gt;</p>
+<p class="p2"><span class="Apple-converted-space">                    </span></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div id="preview-words-container" style="margin-top: 20px; display: none;"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;h4&gt;Preview (select words to add):&lt;/h4&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div id="preview-words-list" style="max-height: 300px; overflow-y: auto; margin-bottom: 15px;"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="buttons"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;button id="confirm-add-preview-btn" style="background: var(--accent-color);"&gt;✅ Add selected&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;button id="cancel-preview-btn" style="background: var(--danger-color);"&gt;❌ Cancel&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">            </span></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;!-- Exercises tab --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="exercises-tab" class="tab-content"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div id="exercises-menu" class="exercise-container active"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="card"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;h1&gt;🧪 Exercises&lt;/h1&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="buttons"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;button id="multiple-choice-btn" style="background: #fd79a8;"&gt;❓ Multiple choice&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;button id="typing-btn" style="background: #74b9ff;"&gt;⌨️ Typing&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;button id="listening-btn" style="background: #00cec9;"&gt;👂 Listening&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;button id="stats-btn" style="background: #fdcb6e;"&gt;📊 Statistics&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">                </span></p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div id="exercise-multiple-choice" class="exercise-container"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div id="exercise-typing" class="exercise-container"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div id="exercise-listening" class="exercise-container"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div id="exercise-stats" class="exercise-container"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Modal for creating list --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal" id="create-list-modal"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="modal-content"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;h2&gt;📝 Create new list&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;input type="text" id="list-name" placeholder="List name" style="width:100%; padding:12px; margin:15px 0; border-radius:12px;"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;textarea id="list-description" placeholder="Description (optional)" style="width:100%; height:80px; margin-bottom:15px; border-radius:12px;"&gt;&lt;/textarea&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="buttons"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;button id="save-list-btn" style="background: var(--accent-color);"&gt;💾 Save&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;button id="cancel-list-btn" style="background: var(--danger-color);"&gt;❌ Cancel&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Modal for import --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal" id="import-modal"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="modal-content"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;h2&gt;📥 Import words&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;textarea id="import-data" placeholder='{"words": [{"arabic": "مرحبا", "translation": "Hello", "learned": false}]}' style="width:100%; height:200px; margin:15px 0; border-radius:12px;"&gt;&lt;/textarea&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="buttons"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;button id="import-confirm-btn" style="background: var(--accent-color);"&gt;📥 Import&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;button id="import-cancel-btn" style="background: var(--danger-color);"&gt;❌ Cancel&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;!-- Language selection modal (first launch) --&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal" id="language-modal"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="modal-content"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;h2&gt;🌐 Choose language / Выберите язык&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="buttons"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;button id="lang-english" style="background: var(--accent-color);"&gt;English&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;button id="lang-russian" style="background: var(--accent-color);"&gt;Русский&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><span class="Apple-converted-space">    </span></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="app.js"&gt;&lt;/script&gt;</p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
 </body>
 </html>
